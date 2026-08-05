@@ -1,0 +1,11 @@
+model_version: "0.1.0"
+status: "development"
+validated_equipment:
+  - "coater_48_inch"
+validated_products:
+  - "omeprazole_pellets"
+validated_solids_fraction: [0.1, 0.2]
+known_limitations:
+  - "Not yet validated for IPA solvent"
+  - "Not yet validated for non-aqueous systems"
+  - "Requires experimental HLF calibration for accurate temperature profiles"

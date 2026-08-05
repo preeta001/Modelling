@@ -1,0 +1,43 @@
+coaters:
+  coater_24_inch:
+    diameter_m: 0.61
+    length_m: 0.61
+    volume_L: 50.0
+    opening_diameter_m: 0.25
+    guns: 2
+    nozzle_diameter_mm: 1.2
+    gun_spacing_m: 0.15
+    airflow_min_cfm: 100
+    airflow_max_cfm: 500
+    rpm_min: 5
+    rpm_max: 20
+    spray_max_g_min_gun: 80
+    HLF_kW_K: 0.05
+  coater_48_inch:
+    diameter_m: 1.22
+    length_m: 1.22
+    volume_L: 350.0
+    opening_diameter_m: 0.45
+    guns: 4
+    nozzle_diameter_mm: 1.2
+    gun_spacing_m: 0.2
+    airflow_min_cfm: 800
+    airflow_max_cfm: 2400
+    rpm_min: 2
+    rpm_max: 12
+    spray_max_g_min_gun: 150
+    HLF_kW_K: 0.2
+  coater_60_inch:
+    diameter_m: 1.52
+    length_m: 1.52
+    volume_L: 750.0
+    opening_diameter_m: 0.55
+    guns: 6
+    nozzle_diameter_mm: 1.2
+    gun_spacing_m: 0.2
+    airflow_min_cfm: 1500
+    airflow_max_cfm: 4000
+    rpm_min: 1
+    rpm_max: 8
+    spray_max_g_min_gun: 180
+    HLF_kW_K: 0.4

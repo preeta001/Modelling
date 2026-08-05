@@ -1,0 +1,23 @@
+products:
+  omeprazole_pellets:
+    core_mass_mg: 1.0
+    tablet_surface_area_mm2: 3.14
+    batch_load_kg: 300.0
+    solids_fraction: 0.15
+    solvent_type: "water"
+    density_core_kg_m3: 1200
+    density_film_kg_m3: 1300
+    cp_core_kJ_kgK: 1.2
+    api_fraction: 0.0
+    target_weight_gain: 0.10
+  placebo_tablets:
+    core_mass_mg: 400.0
+    tablet_surface_area_mm2: 250.0
+    batch_load_kg: 100.0
+    solids_fraction: 0.12
+    solvent_type: "water"
+    density_core_kg_m3: 1400
+    density_film_kg_m3: 1250
+    cp_core_kJ_kgK: 1.1
+    api_fraction: 0.0
+    target_weight_gain: 0.03

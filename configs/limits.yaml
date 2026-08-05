@@ -1,0 +1,8 @@
+limits:
+  T_dcmp_C: 60.0
+  RH_max_fraction: 0.99
+  T_inlet_min_C: 40.0
+  T_inlet_max_C: 80.0
+  RH_inlet_min: 0.04
+  RH_inlet_max: 0.99
+  WI_crit: 1.05

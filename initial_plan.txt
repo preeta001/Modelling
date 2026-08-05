@@ -1,0 +1,3608 @@
+i am going to build this model(track A) for model validation of all  . tell me all the key theroums and features in this that i will implemetn in code. also how should i go about it like just python code hosted or agentic ai with python code( also does it have the recommendation ananlysis by code , graphs or ai thinkink included? should i include that ? ) tell me the best way and also this is the best model right? tell me if u have any and all ideas to implement it
+Copilot said:
+Copilot
+
+Reasoning completed in 3 steps
+I found several related emails, six internal files, and two meetings around your Track A proposal. After reviewing the complete modelling, my honest conclusion is: Track A is the best architecture for you to build now, but it should be implemented as a validated modular Python decision-support system, not as a free-thinking agentic-AI application. It is the best balance of scientific defensibility, existing plant-data compatibility, explainability, computational practicality, and future extensibility.
+PDF type
+modelling
++2
+
+My direct recommendation
+Build this as:
+
+Mechanistic Python engine + calibration and validation engine + uncertainty and optimization engine + recommendation rules + Streamlit interface + optional AI explanation assistant
+
+Do not begin with an autonomous AI agent.
+
+The numerical model must perform all predictions, validation, optimization, risk calculation, and recommendations. AI may later explain the results, identify patterns in residuals, prepare reports, or guide the user through scenarios, but it should not invent setpoints or override equations.
+
+A good final architecture would be:
+
+
+
+
+Plain Text
+Plant CPP time-series
+        +
+Product/formulation data
+        +
+Equipment geometry
+        ↓
+Data validation and unit conversion
+        ↓
+Mechanistic Track A model
+        ↓
+CTQ state calculations
+        ↓
+CQA prediction models
+        ↓
+Calibration + independent validation
+        ↓
+Uncertainty + sensitivity + optimization
+        ↓
+Recommendation and warning engine
+        ↓
+Graphs, reports and optional AI explanation
+
+Show more lines
+This closely follows your proposed Track A flow from inputs, through the mechanistic core, microenvironment, spray and exposure modules, into CQA predictions and probabilistic design-space evaluation.
+PDF type
+modelling
+
+Track A integrated coating-model architecture
+
+1. Is Track A really the “best” model?
+Yes, for your current objective
+Track A is the best present implementation choice because it:
+
+works with existing batch and plant time-series data;
+preserves the trusted EE thermodynamic foundation;
+can be built and validated incrementally;
+includes pan geometry and scale-up;
+introduces actual CPP → CTQ → CQA pathways;
+can run rapidly in ordinary Python;
+remains explainable to process experts;
+leaves a clean migration route into Track B later.
+PDF type
+modelling
++1
+Recent public implementations show that high-fidelity tablet-coating digital twins often use coupled CFD and DEM for gas flow, spray coating, tablet motion, heat transfer and mass transfer. These systems are powerful, but significantly more complex than what is required for your immediate plant-validation objective.
+ansys
++2
+
+But do not call it “the universally best model”
+Track A will only become the best model for your equipment, products and validation range after it demonstrates:
+
+numerical correctness;
+parameter identifiability;
+calibration performance;
+independent batch validation;
+transferability to unseen batches;
+uncertainty reliability;
+practical usefulness compared with the present EE model.
+Until then, describe it as:
+
+A practical, hybrid mechanistic and uncertainty-aware model proposed for plant validation.
+
+Also, the approximate capability percentages in your report are architecture-level estimates, not validated accuracy values. Do not present “70% coverage” as “70% accurate.” Coverage means the number of process capabilities represented, while accuracy must be demonstrated separately for every output.
+PDF type
+modelling
+
+2. The key theories and mathematical features to implement
+You likely mean theories, physical laws, governing equations and algorithms, rather than mathematical theorems. These are the essential ones.
+
+A. Conservation of mass
+Every material entering, leaving or accumulating must be accounted for.
+
+For bed moisture:
+
+d
+M
+w
+,
+b
+d
+t
+=
+m
+˙
+w
+,
+spray
+−
+m
+˙
+evap
+−
+m
+˙
+w
+,
+other
+dt
+dM 
+w,b
+​
+ 
+​
+ = 
+m
+˙
+  
+w,spray
+​
+ − 
+m
+˙
+  
+evap
+​
+ − 
+m
+˙
+  
+w,other
+​
+ 
+For gas-phase moisture:
+
+d
+M
+w
+,
+g
+d
+t
+=
+m
+˙
+w
+,
+in
++
+m
+˙
+evap
+−
+m
+˙
+w
+,
+out
+dt
+dM 
+w,g
+​
+ 
+​
+ = 
+m
+˙
+  
+w,in
+​
+ + 
+m
+˙
+  
+evap
+​
+ − 
+m
+˙
+  
+w,out
+​
+ 
+Code requirement: At every integration step, calculate a mass-balance closure error. If the residual exceeds tolerance, flag the simulation as numerically or physically invalid.
+
+B. First Law of Thermodynamics
+Your steady-state baseline should retain the current EE/am Ende formulation:
+
+H
+˙
+in
+=
+H
+˙
+out
++
+m
+˙
+evap
+Δ
+H
+vap
++
+Q
+˙
+loss
+H
+˙
+  
+in
+​
+ = 
+H
+˙
+  
+out
+​
+ + 
+m
+˙
+  
+evap
+​
+ ΔH 
+vap
+​
+ + 
+Q
+˙
+​
+  
+loss
+​
+ 
+The dynamic bed-energy balance should use:
+
+M
+b
+c
+p
+,
+b
+d
+T
+b
+d
+t
+=
+Q
+˙
+gas-bed
++
+Q
+˙
+spray-bed
+−
+m
+˙
+evap
+Δ
+H
+vap
+−
+Q
+˙
+loss
+,
+b
+M 
+b
+​
+ c 
+p,b
+​
+  
+dt
+dT 
+b
+​
+ 
+​
+ = 
+Q
+˙
+​
+  
+gas-bed
+​
+ + 
+Q
+˙
+​
+  
+spray-bed
+​
+ − 
+m
+˙
+  
+evap
+​
+ ΔH 
+vap
+​
+ − 
+Q
+˙
+​
+  
+loss,b
+​
+ 
+with:
+
+Q
+˙
+gas-bed
+=
+h
+conv
+A
+bed
+(
+T
+g
+−
+T
+b
+)
+Q
+˙
+​
+  
+gas-bed
+​
+ =h 
+conv
+​
+ A 
+bed
+​
+ (T 
+g
+​
+ −T 
+b
+​
+ )
+Q
+˙
+loss
+,
+b
+=
+U
+A
+(
+T
+b
+−
+T
+amb
+)
+Q
+˙
+​
+  
+loss,b
+​
+ =UA(T 
+b
+​
+ −T 
+amb
+​
+ )
+Important correction: Use an absolute 
+U
+A
+UA or HLF quantity in kW/K. Do not keep a normalized heat-loss coefficient constant while changing airflow. Your report identified that this can produce incorrect extrapolation.
+PDF type
+modelling
+
+C. Psychrometrics
+Implement the following as a standalone, thoroughly tested module:
+
+saturation vapour pressure;
+humidity ratio;
+relative humidity;
+wet-bulb temperature;
+dew point;
+moist-air enthalpy;
+dry-air mass flow;
+saturation constraints.
+Core relation:
+
+ω
+=
+0.62198
+p
+w
+P
+−
+p
+w
+ω=0.62198 
+P−p 
+w
+​
+ 
+p 
+w
+​
+ 
+​
+ 
+p
+w
+=
+R
+H
+ 
+p
+w
+s
+(
+T
+)
+p 
+w
+​
+ =RHp 
+ws
+​
+ (T)
+Use one internally consistent pressure and unit convention. Avoid mixing Torr-based Antoine constants with kPa equations unless conversion is explicit.
+
+D. Dynamic-state modelling
+Use time-dependent ordinary differential equations for:
+
+tablet-bed temperature;
+retained bed moisture;
+gas temperature or gas enthalpy;
+gas humidity;
+optionally pan/drum temperature.
+Use scipy.integrate.solve_ivp, initially with LSODA or BDF, because coupled thermal and moisture models can become stiff.
+
+The solver must support the real process phases:
+
+preheating;
+spray ramp-up;
+steady spraying;
+pauses or interruptions;
+final drying;
+cooling.
+This phase-based state machine is essential. Otherwise the code may incorrectly apply spray-input terms during preheating or cooling.
+
+E. Wetness and drying-capacity diagnostics
+Implement:
+
+W
+I
+(
+t
+)
+=
+m
+˙
+solvent applied
+m
+˙
+evaporation capacity
+WI(t)= 
+m
+˙
+  
+evaporation capacity
+​
+ 
+m
+˙
+  
+solvent applied
+​
+ 
+​
+ 
+and cumulative excess wetness:
+
+E
+W
+I
+=
+∫
+0
+t
+f
+max
+⁡
+[
+0
+,
+W
+I
+(
+t
+)
+−
+W
+I
+crit
+]
+d
+t
+E 
+WI
+​
+ =∫ 
+0
+t 
+f
+​
+ 
+​
+ max[0,WI(t)−WI 
+crit
+​
+ ]dt
+Do not hard-code 
+W
+I
+crit
+WI 
+crit
+​
+  as universally equal to one for defect prediction. The theoretical ratio can use one as a reference, but the actual defect threshold should be calibrated by product, formulation or product family.
+PDF type
+modelling
+
+F. Equipment geometry and dimensional similarity
+Store an equipment object containing:
+
+pan diameter and length;
+aspect ratio;
+usable pan volume;
+load and occupancy;
+bed surface-area estimate;
+gun number;
+gun spacing;
+nozzle type and diameter;
+gun-to-bed distance;
+spray angle;
+baffle design;
+airflow limits;
+RPM limits;
+spray-rate-per-gun limits;
+pan pressure-drop range.
+Implement at least three selectable RPM scale-up calculations:
+
+Constant peripheral speed
+N
+2
+=
+N
+1
+D
+1
+D
+2
+N 
+2
+​
+ =N 
+1
+​
+  
+D 
+2
+​
+ 
+D 
+1
+​
+ 
+​
+ 
+Constant Froude number
+N
+2
+=
+N
+1
+D
+1
+D
+2
+N 
+2
+​
+ =N 
+1
+​
+  
+D 
+2
+​
+ 
+D 
+1
+​
+ 
+​
+ 
+​
+ 
+Data-calibrated similarity
+Fit RPM against an observed target such as:
+
+circulation time;
+visit frequency;
+tablet-motion signature;
+coating-mass CoV.
+Do not let the program silently select one as universally correct. Display the alternatives, their predicted consequences and any equipment-limit violations.
+PDF type
+modelling
+
+G. Spray, droplet and deposition physics
+Implement the causal chain:
+
+
+
+
+Plain Text
+Atomisation pressure
+→ droplet size d32
+→ flight time
+→ drying time
+→ impact condition
+→ deposition efficiency
+``
+Core variables:
+
+t
+flight
+=
+L
+gun-bed
+v
+droplet
+t 
+flight
+​
+ = 
+v 
+droplet
+​
+ 
+L 
+gun-bed
+​
+ 
+​
+ 
+Π
+flight
+=
+t
+dry
+t
+flight
+Π 
+flight
+​
+ = 
+t 
+flight
+​
+ 
+t 
+dry
+​
+ 
+​
+ 
+J
+spray
+=
+m
+˙
+spray
+A
+spray zone
+J 
+spray
+​
+ = 
+A 
+spray zone
+​
+ 
+m
+˙
+  
+spray
+​
+ 
+​
+ 
+However, one caution: your document’s 
+Π
+flight
+Π 
+flight
+​
+  interpretation must be verified carefully when coding. If the numerator is 
+t
+dry
+t 
+dry
+​
+  and denominator is 
+t
+flight
+t 
+flight
+​
+ , then:
+
+Π
+flight
+<
+1
+Π 
+flight
+​
+ <1 means drying occurs faster than flight, indicating pre-drying or spray drying;
+Π
+flight
+>
+1
+Π 
+flight
+​
+ >1 means the droplet has not fully dried during flight and arrives wetter.
+Make this definition explicit in code and unit-test the limiting cases.
+
+Atomisation pressure should enter through a calibrated droplet-size correlation, not merely as another term in the energy balance.
+
+H. Tablet exposure and coating uniformity
+Track:
+
+circulation-time distribution;
+spray-zone residence-time distribution;
+number of spray-zone visits;
+fractional exposure;
+local spray flux;
+projected tablet area;
+deposition efficiency.
+For simulated tablet 
+i
+i:
+
+Δ
+m
+i
+=
+J
+(
+x
+i
+)
+A
+proj
+,
+i
+η
+i
+I
+spray
+,
+i
+Δ
+t
+Δm 
+i
+​
+ =J(x 
+i
+​
+ )A 
+proj,i
+​
+ η 
+i
+​
+ I 
+spray,i
+​
+ Δt
+Then:
+
+m
+i
+(
+t
+f
+)
+=
+∑
+n
+Δ
+m
+i
+(
+n
+)
+m 
+i
+​
+ (t 
+f
+​
+ )= 
+n
+∑
+​
+ Δm 
+i
+​
+ (n)
+and:
+
+C
+V
+m
+=
+σ
+(
+m
+i
+)
+m
+i
+‾
+CV 
+m
+​
+ = 
+m 
+i
+​
+ 
+​
+ 
+σ(m 
+i
+​
+ )
+​
+ 
+Use Monte Carlo simulation or a reduced-order residence-time model first. Full DEM is unnecessary for the initial Track A build.
+
+I. CQA calculations
+Create separate CQA plug-ins rather than one giant function.
+
+Weight gain
+W
+G
+(
+t
+)
+=
+η
+dep
+∫
+0
+t
+m
+˙
+spray
+(
+τ
+)
+x
+s
+ 
+d
+τ
+M
+core
+WG(t)= 
+M 
+core
+​
+ 
+η 
+dep
+​
+ ∫ 
+0
+t
+​
+  
+m
+˙
+  
+spray
+​
+ (τ)x 
+s
+​
+ dτ
+​
+ 
+Film-thickness distribution
+δ
+i
+=
+m
+coat
+,
+i
+ρ
+film
+A
+tablet
+,
+i
+δ 
+i
+​
+ = 
+ρ 
+film
+​
+ A 
+tablet,i
+​
+ 
+m 
+coat,i
+​
+ 
+​
+ 
+Moisture or LOD
+Calculate from the dynamic moisture state plus a calibrated film-retention or sorption relationship.
+
+Assay/UOD for active coating
+M
+API
+,
+i
+=
+x
+API,coat
+m
+coat
+,
+i
+M 
+API,i
+​
+ =x 
+API,coat
+​
+ m 
+coat,i
+​
+ 
+Dissolution
+Do not claim a universal dissolution equation. Use mechanistic states as features:
+
+mean film thickness;
+film-thickness CoV;
+retained moisture;
+curing or temperature history;
+polymer/formulation ID;
+estimated defects.
+Start with a product-specific statistical or semi-mechanistic model and validate it independently.
+
+Related substances
+Calculate thermal and moisture exposure integrals:
+
+H
+T
+=
+∫
+max
+⁡
+(
+0
+,
+T
+b
+−
+T
+ref
+)
+d
+t
+H 
+T
+​
+ =∫max(0,T 
+b
+​
+ −T 
+ref
+​
+ )dt
+H
+M
+=
+∫
+a
+w
+(
+t
+)
+d
+t
+H 
+M
+​
+ =∫a 
+w
+​
+ (t)dt
+Then fit an empirical product-specific relationship. Your report correctly warns that assay, dissolution and RS cannot be inferred from a general heat balance alone.
+PDF type
+modelling
+
+3. Recommendation analysis: should it be code, graphs or AI?
+Include it, but make it a code-driven advisory layer.
+
+Layer 1: Deterministic rule engine
+Examples:
+
+
+
+
+Plain Text
+IF WI > calibrated limit:
+    warning = "Predicted solvent accumulation"
+    actions = [
+        "reduce spray rate",
+        "increase effective drying capacity",
+        "check airflow and inlet humidity"
+    ]
+`
+
+
+
+Plain Text
+IF required_RPM > equipment_RPM_max:
+    reject scenario
+    explanation = "Froude-matched RPM exceeds equipment range"
+The rules should recommend directions, not automatically issue an unvalidated plant setpoint.
+
+Layer 2: Numerical optimizer
+Use constrained optimization to find conditions that:
+
+minimize predicted CQA failure risk;
+minimize coating time;
+minimize energy use;
+maximize deposition efficiency;
+stay inside equipment and validated operating limits.
+A useful multi-objective form is:
+
+min
+⁡
+x
+[
+w
+1
+P
+fail
++
+w
+2
+t
+coat
++
+w
+3
+E
+energy
++
+w
+4
+C
+V
+m
+]
+x
+min
+​
+ [w 
+1
+​
+ P 
+fail
+​
+ +w 
+2
+​
+ t 
+coat
+​
+ +w 
+3
+​
+ E 
+energy
+​
+ +w 
+4
+​
+ CV 
+m
+​
+ ]
+subject to:
+
+x
+min
+⁡
+≤
+x
+≤
+x
+max
+⁡
+x 
+min
+​
+ ≤x≤x 
+max
+​
+ 
+and all temperature, RH, RPM, airflow, gun and spray constraints.
+
+Use scipy.optimize, pymoo, or Bayesian optimization only after the forward model is validated.
+
+Layer 3: Recommendation ranking
+Produce three outputs:
+
+Current-run assessment
+Safest feasible alternative
+Best performance alternative
+Each recommendation should include:
+
+proposed change;
+predicted improvement;
+uncertainty interval;
+constraint margin;
+sensitivity;
+reason;
+whether it lies inside the validated domain.
+Layer 4: Optional AI explanation
+An LLM can convert structured model output into text such as:
+
+“The predicted overwetting risk is driven primarily by spray rate and inlet humidity. The optimizer found that reducing spray rate while maintaining airflow produces a larger safety margin than increasing inlet temperature.”
+
+But the AI must receive the calculated results in structured JSON. It should explain, not calculate or invent them.
+
+4. Graphs you should definitely include
+Your Streamlit application should include:
+
+predicted and measured exhaust temperature versus time;
+predicted and measured exhaust RH versus time;
+predicted bed temperature and moisture versus time;
+residual plots by time, phase, equipment and product;
+WI and cumulative 
+E
+W
+I
+E 
+WI
+​
+ ;
+spray-rate and evaporation-capacity comparison;
+droplet flight-drying regime plot;
+coating-weight-gain trajectory;
+film-thickness histogram;
+coating-mass or assay CoV distribution;
+predicted versus observed parity plots;
+residual histogram and QQ plot;
+parameter sensitivity tornado chart;
+Monte Carlo output distributions;
+failure-probability heat map;
+green-amber-red design-space map;
+scale-up comparison for linear-speed, Froude and calibrated RPM;
+recommendation comparison with baseline;
+model-validity or extrapolation warning panel;
+missing-data and sensor-quality dashboard.
+Your uncertainty and traffic-light design-space layer should be one of the central outputs, not an afterthought.
+PDF type
+modelling
+
+Monte Carlo risk and traffic-light design space
+
+5. How I would structure the Python application
+
+
+
+Plain Text
+tablet_coating_model/
+│
+├── app.py
+├── config/
+│   ├── equipment.yaml
+│   ├── products.yaml
+│   └── limits.yaml
+│
+├── data/
+│   ├── schema.py
+│   ├── loader.py
+│   ├── cleaning.py
+│   └── phase_detection.py
+│
+├── physics/
+│   ├── units.py
+│   ├── psychrometrics.py
+│   ├── solvent_properties.py
+│   ├── steady_state_ee.py
+│   ├── heat_loss.py
+│   ├── dynamic_thermo.py
+│   └── moisture_balance.py
+│
+├── equipment/
+│   ├── geometry.py
+│   ├── scale_up.py
+│   └── constraint_checks.py
+│
+├── spray/
+│   ├── droplet_size.py
+│   ├── flight_drying.py
+│   ├── spray_footprint.py
+│   └── deposition.py
+│
+├── exposure/
+│   ├── residence_time.py
+│   ├── monte_carlo_tablets.py
+│   └── uniformity.py
+│
+├── cqa/
+│   ├── weight_gain.py
+│   ├── film_thickness.py
+│   ├── moisture_lod.py
+│   ├── dissolution.py
+│   ├── assay_uod.py
+│   └── related_substances.py
+│
+├── calibration/
+│   ├── objective_functions.py
+│   ├── parameter_estimation.py
+│   ├── identifiability.py
+│   └── bootstrap.py
+│
+├── validation/
+│   ├── unit_tests.py
+│   ├── metrics.py
+│   ├── residual_diagnostics.py
+│   ├── batch_validation.py
+│   └── transfer_validation.py
+│
+├── uncertainty/
+│   ├── distributions.py
+│   ├── monte_carlo.py
+│   ├── sensitivity.py
+│   └── design_space.py
+│
+├── optimization/
+│   ├── objectives.py
+│   ├── constraints.py
+│   └── recommendations.py
+│
+├── reporting/
+│   ├── plots.py
+│   ├── explanations.py
+│   └── export.py
+│
+└── tests/
+
+Show more lines
+This separation is important because it prevents Streamlit interface logic, physical equations, fitted models and AI logic from becoming mixed together.
+
+6. Validation strategy you should follow
+Do not calibrate everything simultaneously.
+
+Stage 1: Numerical and physical verification
+Test:
+
+unit consistency;
+saturation limits;
+positive masses and moisture;
+mass and energy closure;
+zero-spray behavior;
+zero-heat-loss behavior;
+steady-state recovery from the dynamic model;
+expected response to higher spray rate, airflow and temperature.
+Stage 2: Thermodynamic calibration
+Fit only:
+
+U
+A
+UA/HLF;
+effective bed heat capacity;
+evaporation efficiency;
+relevant sensor offsets.
+Targets:
+
+exhaust temperature;
+exhaust RH;
+bed temperature, if available.
+Stage 3: Deposition calibration
+Fit:
+
+deposition efficiency;
+gun losses;
+effective spray coverage.
+Targets:
+
+final weight gain;
+coating yield;
+process efficiency.
+Stage 4: Exposure and uniformity
+Fit:
+
+circulation-time parameters;
+spray-zone exposure statistics;
+local flux variation.
+Targets:
+
+individual-tablet coating mass;
+film-thickness CoV;
+color uniformity;
+UOD or active-coating variability.
+Stage 5: Product-specific CQAs
+Fit dissolution, assay, moisture and RS models only after the mechanistic states are validated.
+
+Stage 6: Locked external validation
+Validate on batches not used for fitting:
+
+unseen batch;
+unseen season;
+unseen load;
+unseen equipment;
+preferably unseen product family.
+Report more than 
+R
+2
+R 
+2
+ :
+
+RMSE;
+MAE;
+mean bias;
+prediction-interval coverage;
+residual autocorrelation;
+worst-case error;
+failure-class precision and recall;
+extrapolation distance.
+Your document already establishes the correct hierarchy: equation tests, signal validation, endpoint validation, distribution validation, CQA validation and transfer validation.
+PDF type
+modelling
+
+Staged calibration and six-level validation hierarchy
+
+7. Agentic AI versus hosted Python: final choice
+Build now
+Python package + Streamlit web interface
+
+This gives you:
+
+reproducible calculations;
+version-controlled equations;
+traceable parameters;
+fast scenario simulation;
+graphs and downloadable reports;
+constrained optimization;
+validation capability;
+easier review by SMEs.
+Add later
+AI copilot inside the application
+
+Allow it to:
+
+explain graphs;
+summarize validation;
+compare batches;
+describe which CPPs drive risk;
+generate a narrative report;
+answer “why did the recommendation change?”;
+translate technical results for non-technical users.
+Do not add initially
+A fully autonomous agent that:
+
+changes equations;
+chooses calibration data;
+changes model parameters;
+recommends unrestricted setpoints;
+directly controls plant equipment;
+labels a batch safe without mechanistic and statistical checks.
+A digital twin becomes meaningful when it includes a continuously updated virtual representation tied to the physical process. A standard hosted simulator, even a sophisticated one, is not automatically a digital twin. Public tablet-coating work also distinguishes traditional simulation from adaptive, interactive digital-twin approaches.
+tabletscapsules
++1
+
+8. Additional ideas that would make your implementation stronger
+Model validity envelope: Before giving a prediction, calculate whether the request lies within the calibrated range of equipment, product and CPP values.
+
+Abstention logic: If uncertainty is large, data quality is poor, or the query is outside the validity envelope, return “recommendation withheld” rather than a false precise answer.
+
+Data-quality score: Evaluate missing values, time gaps, sensor flatlining, calibration drift and impossible step changes.
+
+Automatic phase detection: Identify preheat, spray, interruption, drying and cooling from spray rate and equipment signals.
+
+Batch fingerprinting: Normalize thermal, moisture, wetness and spray trajectories and compare new batches against validated batches.
+
+Dual-estimator checks: Where feasible, calculate critical states in two independent ways. For example, infer evaporation from both spray-water balance and exhaust humidity pickup.
+
+Feature provenance: Every output should show whether it is measured, mechanistically calculated, fitted, AI-explained or assumed.
+
+Global sensitivity analysis: Use Morris screening first and Sobol analysis later. This tells you which parameters actually require accurate measurement.
+
+Identifiability check: Avoid fitting two parameters that compensate for each other, such as heat-transfer coefficient and effective area, unless supporting data distinguish them.
+
+Product-family hierarchy: Keep one shared physics core but allow product-specific parameters for sorption, dissolution and degradation.
+
+Versioned model cards: Record equation version, calibration data, parameter set, validation metrics, applicable equipment and known limitations.
+
+Human approval gate: Recommendations should be advisory until the model has completed independent validation and formal process review.
+
+Bottom line
+Build Track A as a modular Python mechanistic-hybrid validation and recommendation platform, host it in Streamlit, and include code-based recommendations, optimization, uncertainty, sensitivity and visual design-space analysis. Add AI only as a controlled explanation and reporting layer.
+
+That gives you something much more valuable than an “AI app”: it gives you a scientifically traceable model that can prove why it made each prediction, quantify when it may be wrong, and refuse to recommend outside its validated domain.
+
+
+py
+EE-test-9-1-Varible-Solid-Fraction
+You said:
+firstly this is a time dependent model right? okay we will do the ai copilot later. for now python package + streamlit web interface is the way to go( streamlit is the best option? ) explain how i go about in detail step by step. explaining everything. i iddnt quite understand this- Mechanistic Python engine + calibration and validation engine + uncertainty and optimization engine + recommendation rules + Streamlit interface . explain each step beginner friendly so i understand how i go about it. also i have added the previous primitive code. roughly how big do u think my current code will be?
+Copilot said:
+Copilot
+
+Reasoning completed in 2 steps
+Yes, Track A is fundamentally time-dependent, provided we implement the dynamic heat and moisture balances rather than only calculating one steady-state value for each stage. Your present EE-test-9-1-Varible-Solid-Fraction is still mainly a steady-state, stage-by-stage EE calculator and optimizer. It has multiple stages, but multiple stages do not automatically make a model dynamic.
+sharepoint
+
+And yes, for your current purpose, Python package + Streamlit web interface is the most practical choice. The important point is that Streamlit must be only the visible front end. The scientific model should live in separate Python modules behind it.
+
+1. First, what exactly does “time-dependent” mean?
+This distinction is extremely important.
+
+Your present model
+Your current code asks the user to enter separate values for stages such as:
+
+spray rate;
+inlet temperature;
+airflow;
+inlet relative humidity;
+expected exhaust temperature.
+Then it calculates an answer for each stage.
+
+Conceptually, it behaves like this:
+
+
+
+
+Plain Text
+Stage 1 inputs → Stage 1 calculation
+Stage 2 inputs → Stage 2 calculation
+Stage 3 inputs → Stage 3 calculation
+Each stage is essentially treated as a separate steady operating condition.
+
+That is a multi-stage steady-state model.
+
+It does not yet continuously remember:
+
+how hot the bed was in the previous minute;
+how much moisture was retained previously;
+how quickly the pan warms up;
+whether wetness accumulated during a spray-rate ramp;
+what happens immediately after a spray interruption;
+how long the bed requires to dry after spraying stops.
+The new Track A model
+A genuine time-dependent model behaves like a movie:
+
+
+
+
+Plain Text
+State at 10:00:00
+↓
+Calculate change over next time step
+↓
+State at 10:00:10
+↓
+Calculate next change
+↓
+State at 10:00:20
+↓
+Continue through the complete batch
+At every point in time, the program remembers the previous state.
+
+For example:
+
+T
+b
+(
+t
++
+Δ
+t
+)
+=
+T
+b
+(
+t
+)
++
+d
+T
+b
+d
+t
+Δ
+t
+T 
+b
+​
+ (t+Δt)=T 
+b
+​
+ (t)+ 
+dt
+dT 
+b
+​
+ 
+​
+ Δt
+and:
+
+M
+w
+(
+t
++
+Δ
+t
+)
+=
+M
+w
+(
+t
+)
++
+d
+M
+w
+d
+t
+Δ
+t
+M 
+w
+​
+ (t+Δt)=M 
+w
+​
+ (t)+ 
+dt
+dM 
+w
+​
+ 
+​
+ Δt
+Here:
+
+T
+b
+(
+t
+)
+T 
+b
+​
+ (t) is the current tablet-bed temperature;
+M
+w
+(
+t
+)
+M 
+w
+​
+ (t) is the current retained water in the bed;
+d
+T
+b
+/
+d
+t
+dT 
+b
+​
+ /dt tells us how quickly temperature is changing;
+d
+M
+w
+/
+d
+t
+dM 
+w
+​
+ /dt tells us how quickly moisture is accumulating or evaporating.
+So if too much solvent enters during one period, the additional moisture remains in the model until it evaporates. That memory is what makes it dynamic.
+
+Best description of Track A
+Track A should contain both models:
+
+Steady-state EE model
+
+preserves and reproduces the current model;
+provides the baseline;
+runs very quickly;
+allows comparison with current results.
+Dynamic time-dependent model
+
+follows the complete batch;
+predicts bed temperature and moisture trajectories;
+captures warm-up, spraying, interruptions, drying and cooling;
+detects cumulative wetness.
+The steady model is not discarded. It becomes the baseline underneath the dynamic model.
+
+2. Is Streamlit really the best option?
+For your current project, yes
+Streamlit is particularly suitable because:
+
+your scientific calculations are already in Python;
+you can create the UI, calculations, tables and plots in one language;
+no separate JavaScript front end is initially required;
+it supports interactive numerical inputs;
+it displays Pandas dataframes and plots conveniently;
+it supports file upload and result download;
+it supports multipage applications;
+it is familiar to you and your existing code already uses it.
+Streamlit’s official documentation currently recommends its multipage navigation support for organizing larger applications, and Streamlit describes itself as a Python framework for turning data scripts into shareable web apps without needing a separate frontend stack.
+streamlit
++1
+
+But Streamlit is not the mathematical model
+Think of a restaurant:
+
+Python model package is the kitchen.
+Streamlit is the dining area and menu.
+Plant data are the ingredients.
+Model results are the prepared food.
+Graphs and recommendations are the presentation to the customer.
+The dining area must never contain the cooking logic.
+
+Right now, your existing file mixes:
+
+constants;
+solvent calculations;
+thermodynamics;
+optimization;
+session state;
+forms;
+widgets;
+output logic.
+That is acceptable for a prototype, but it will become extremely difficult to validate and maintain when Track A becomes larger.
+
+When would Streamlit not be the best?
+Streamlit may stop being the preferred front end if the application later requires:
+
+direct integration with validated manufacturing control systems;
+many concurrent users with complex permissions;
+elaborate database workflows;
+real-time plant control;
+highly customized frontend behavior;
+formal regulated-system deployment requirements.
+That is not the immediate problem. For the current validation and advisory application, Streamlit is the right first platform.
+
+3. What does the complete architecture mean?
+The phrase:
+
+Mechanistic Python engine + calibration and validation engine + uncertainty and optimization engine + recommendation rules + Streamlit interface
+
+does not mean five separate apps. It means five connected responsibilities inside one application.
+
+4. Part 1: The mechanistic Python engine
+What is it?
+This is the scientific heart of your application.
+
+“Mechanistic” means the answer comes from physical understanding and conservation laws, rather than purely learning correlations from historical data.
+
+For example:
+
+
+
+
+Plain Text
+Hot air supplies heat
+→ solvent consumes heat during evaporation
+→ tablet-bed temperature changes
+→ moisture accumulates or evaporates
+→ coating solids deposit
+→ coating weight and film thickness increase
+The mechanistic engine converts inputs into physical process states.
+
+Inputs
+The engine receives three broad input groups.
+
+A. Process inputs
+These change during a batch:
+
+time;
+inlet temperature;
+inlet relative humidity;
+airflow;
+spray rate;
+pan RPM;
+atomization pressure;
+pattern-air pressure;
+product temperature, if available;
+exhaust temperature and RH;
+spray on/off state;
+process phase.
+B. Product inputs
+These describe the material being coated:
+
+core-tablet mass;
+total batch load;
+tablet surface area;
+tablet dimensions;
+tablet heat capacity;
+coating-solids fraction;
+solvent type;
+coating density;
+API fraction for active coating;
+product-specific limits.
+C. Equipment inputs
+These describe the coater:
+
+pan diameter;
+pan length;
+working volume;
+number of guns;
+nozzle diameter;
+gun spacing;
+spray angle;
+gun-to-bed distance;
+baffle design or category;
+allowable airflow;
+allowable RPM;
+allowable spray rate per gun;
+heat-loss parameter 
+U
+A
+UA.
+Outputs
+The mechanism layer should calculate:
+
+inlet humidity ratio;
+exhaust humidity ratio;
+wet-bulb temperature;
+predicted exhaust temperature;
+predicted exhaust RH;
+bed temperature as a function of time;
+retained bed moisture;
+evaporation capacity;
+actual evaporation rate;
+wetness index;
+cumulative excess wetness;
+coating solids deposited;
+weight gain;
+droplet-flight condition;
+tablet-exposure distribution;
+coating-mass distribution;
+film-thickness distribution.
+How should it be coded?
+Not like this:
+
+
+
+
+Python
+if st.button("Calculate"):
+    # all thermodynamics here
+    # all optimization here
+    # all graphs here
+Instead:
+
+
+
+
+Python
+from coating_model.dynamic_model import simulate_batch
+ 
+results = simulate_batch(
+    process_data=process_df,
+    product=product_config,
+    equipment=equipment_config,
+)
+The simulate_batch() function should know nothing about Streamlit. It should accept ordinary Python objects and return ordinary results.
+
+This separation means you can:
+
+test the model without opening a web page;
+compare new and old equations;
+run hundreds of batches automatically;
+reuse the model later in another interface;
+prove that UI changes did not alter the physics.
+5. Part 2: The calibration engine
+Why is calibration needed?
+Some quantities are known directly from physics:
+
+heat capacity of air;
+gas constant;
+saturation pressure relationship;
+latent heat;
+unit conversions.
+Other quantities are specific to your equipment or product and cannot be assumed perfectly:
+
+equipment heat-loss coefficient 
+U
+A
+UA;
+effective tablet-bed heat capacity;
+effective heat-transfer coefficient;
+evaporation efficiency;
+deposition efficiency;
+spray loss;
+effective spray-zone area;
+circulation-time parameter.
+Calibration means:
+
+Find the parameter values that make model predictions agree with selected experimental or plant observations.
+
+Beginner example
+Suppose the model predicts an exhaust temperature of 
+48
+∘
+C
+48 
+∘
+ C, but the plant records 
+45
+∘
+C
+45 
+∘
+ C.
+
+That difference could indicate that the model underestimated heat loss.
+
+The calibration engine adjusts 
+U
+A
+UA until the model better represents the calibration batch.
+
+Conceptually:
+
+
+
+
+Plain Text
+Choose initial UA
+      ↓
+Run model
+      ↓
+Compare predicted and measured temperature
+      ↓
+Change UA
+      ↓
+Run again
+      ↓
+Repeat until error is minimized
+Mathematically, it minimizes an objective such as:
+
+J
+(
+θ
+)
+=
+∑
+t
+[
+T
+measured
+(
+t
+)
+−
+T
+predicted
+(
+t
+,
+θ
+)
+]
+2
+J(θ)= 
+t
+∑
+​
+ [T 
+measured
+​
+ (t)−T 
+predicted
+​
+ (t,θ)] 
+2
+ 
+where 
+θ
+θ represents fitted parameters.
+
+What calibration must not do
+The calibration engine must not freely change every parameter until a single batch looks perfect. That produces overfitting.
+
+Calibrate in stages:
+
+Calibration stage 1: Thermodynamics
+Fit only such values as:
+
+U
+A
+UA;
+effective bed heat capacity;
+heat-transfer coefficient;
+evaporation-efficiency parameter;
+sensor offset, only if justified.
+Targets:
+
+exhaust temperature;
+exhaust RH;
+bed temperature if measured.
+Calibration stage 2: Deposition
+Fit:
+
+deposition efficiency;
+gun or overspray loss;
+effective spray coverage.
+Targets:
+
+final coating weight gain;
+coating yield;
+process efficiency.
+Calibration stage 3: Uniformity
+Fit:
+
+circulation-time distribution;
+spray-zone visit probability;
+exposure variability.
+Targets:
+
+tablet-to-tablet coating variation;
+film-thickness CoV;
+color variation;
+UOD data where relevant.
+Calibration stage 4: CQA relationships
+Fit product-specific coefficients using:
+
+dissolution;
+assay;
+related substances;
+final LOD.
+Output of calibration
+The result should be a parameter file:
+
+
+
+
+YAML
+equipment_id: coater_01
+UA_kW_per_K: 0.42
+bed_cp_kJ_per_kgK: 1.18
+evaporation_efficiency: 0.91
+deposition_efficiency: 0.94
+calibration_version: v1.0
+These are example fields, not suggested values.
+
+6. Part 3: The validation engine
+Calibration and validation are different
+This is a critical distinction.
+
+Calibration asks:
+What parameter values make the model agree with known data?
+
+Validation asks:
+After those values are locked, does the model correctly predict new data it has not seen?
+
+For example:
+
+
+
+
+Plain Text
+Batches 1–5 → calibration
+Batches 6–8 → validation
+ 
+You do not refit the model on Batches 6–8. You use the locked parameter values and measure performance.
+
+Validation must happen layer by layer
+Level 1: Equation tests
+Check that:
+
+humidity ratio stays physical;
+wet-bulb temperature does not exceed dry-bulb temperature;
+moisture does not become negative;
+mass is conserved;
+energy is conserved;
+zero spray produces zero coating addition;
+stopping spray stops solvent input;
+the dynamic model approaches the steady-state solution under constant conditions.
+Level 2: Signal validation
+Compare predicted and measured:
+
+exhaust temperature versus time;
+exhaust RH versus time;
+bed temperature versus time;
+evaporation rate versus time.
+Level 3: Batch endpoint validation
+Compare:
+
+final weight gain;
+final moisture;
+coating time;
+coating efficiency;
+total solvent removed.
+Level 4: Distribution validation
+Compare:
+
+tablet-to-tablet coating variation;
+film-thickness distribution;
+assay or UOD variation;
+color variation.
+Level 5: CQA validation
+Compare:
+
+dissolution;
+assay;
+RS;
+appearance;
+residual moisture or solvent.
+Level 6: Transfer validation
+Test whether the model works on:
+
+a new batch;
+a different load;
+a different season or incoming-air condition;
+a different coater;
+a different product.
+Metrics
+Your validation engine should calculate:
+
+MAE;
+RMSE;
+bias;
+maximum absolute error;
+R
+2
+R 
+2
+ , where appropriate;
+residuals against time;
+residuals against spray rate;
+residuals by phase;
+prediction-interval coverage.
+The validation engine should produce a report, not merely “Pass” or “Fail.”
+
+7. Part 4: The uncertainty engine
+Why do we need uncertainty?
+Plant inputs are not perfectly constant.
+
+For example:
+
+airflow fluctuates;
+relative humidity varies;
+spray pumps pulse;
+sensors contain noise;
+deposition efficiency is not exactly known;
+fitted parameters have uncertainty.
+A normal model says:
+
+Predicted bed temperature = one value.
+
+An uncertainty-aware model says:
+
+Based on measured process variability and parameter uncertainty, the predicted bed-temperature trajectory has a distribution and confidence interval.
+
+How it works
+Instead of running one simulation:
+
+
+
+
+Plain Text
+Airflow = one value
+Spray rate = one value
+UA = one value
+``
+run many simulations with plausible variations:
+
+
+
+
+Plain Text
+Simulation 1: slightly lower airflow
+Simulation 2: slightly higher spray rate
+Simulation 3: higher inlet humidity
+Simulation 4: lower deposition efficiency
+...
+This is Monte Carlo propagation.
+
+The application then calculates:
+
+probability of overwetting;
+probability of spray drying;
+probability that coating CoV exceeds its limit;
+probability that a CQA falls outside specification;
+confidence interval around each prediction.
+Important rule
+The input distributions must come from:
+
+historical sensor variation;
+repeatability studies;
+calibration uncertainty;
+instrument accuracy;
+process knowledge.
+They should not be arbitrary.
+
+8. Part 5: The optimization engine
+What does optimization mean?
+After you can predict a batch, you can ask:
+
+Which feasible operating conditions produce the safest or best predicted result?
+
+The optimizer changes selected controllable CPPs, for example:
+
+inlet temperature;
+airflow;
+spray rate;
+RPM;
+atomization pressure.
+It repeatedly runs the model.
+
+
+
+
+Plain Text
+Candidate settings
+      ↓
+Dynamic simulation
+      ↓
+Calculate quality, risk, time and constraints
+      ↓
+Optimizer chooses a better candidate
+      ↓
+Repeat
+What might the optimizer minimize?
+A possible objective is:
+
+J
+=
+w
+1
+P
+failure
++
+w
+2
+C
+V
+coat
++
+w
+3
+t
+coating
++
+w
+4
+E
+energy
+J=w 
+1
+​
+ P 
+failure
+​
+ +w 
+2
+​
+ CV 
+coat
+​
+ +w 
+3
+​
+ t 
+coating
+​
+ +w 
+4
+​
+ E 
+energy
+​
+ 
+This means the optimizer tries to reduce:
+
+failure probability;
+coating nonuniformity;
+coating time;
+energy consumption.
+But it must obey constraints:
+
+
+
+
+Plain Text
+Minimum ≤ airflow ≤ equipment maximum
+Minimum ≤ RPM ≤ equipment maximum
+Spray per gun ≤ validated limit
+Bed temperature ≤ product limit
+Exhaust RH ≤ allowable limit
+``
+Optimization comes after validation
+An optimizer can exploit even a small equation error and produce an apparently excellent but physically poor recommendation. Therefore:
+
+implement forward simulation;
+verify equations;
+calibrate;
+validate;
+add uncertainty;
+only then optimize.
+Your present code already imports differential_evolution, showing the beginning of an optimizer concept, but the displayed file remains centered on stage-level EE optimization rather than full-batch dynamic CQA-risk optimization.
+sharepoint
+
+9. Part 6: Recommendation rules
+How are rules different from optimization?
+The optimizer produces numerical candidate settings.
+
+Recommendation rules interpret the calculated condition.
+
+Example:
+
+
+
+
+Plain Text
+Model result:
+WI is high
+Evaporation capacity is below solvent input
+Bed moisture is increasing
+Recommendation engine:
+
+
+
+
+Plain Text
+Primary risk: solvent accumulation
+Main contributors: spray rate and inlet humidity
+Permitted actions:
+1. reduce spray rate within the validated range;
+2. increase effective drying capacity within equipment limits;
+3. inspect inlet-air dehumidification;
+4. verify airflow and spray calibration.
+ 
+Recommendation output should include
+identified risk;
+evidence from model outputs;
+major influencing CPPs;
+recommended direction of change;
+optimized candidate, if available;
+confidence or failure probability;
+operating-limit margin;
+whether the condition is interpolation or extrapolation;
+which rule was triggered.
+What it should not do
+It should not say:
+
+“Set spray rate to X and run the batch.”
+
+unless that value:
+
+comes from the optimizer;
+meets all constraints;
+lies within the validated model domain;
+passes uncertainty analysis;
+is clearly advisory;
+receives appropriate human review.
+10. Part 7: The Streamlit interface
+Streamlit is the part the user sees.
+
+I recommend the following pages.
+
+Page 1: Home and model scope
+Show:
+
+model version;
+supported products and equipment;
+validation status;
+applicable input range;
+important limitations.
+Page 2: Data upload and quality check
+Allow upload of CSV or Excel plant data.
+
+Show:
+
+detected columns;
+units;
+missing values;
+time gaps;
+invalid ranges;
+process phases;
+sensor-quality warnings.
+Page 3: Batch simulation
+Allow selection of:
+
+equipment;
+product;
+solvent;
+batch load;
+parameter set.
+Run the complete time-dependent model.
+
+Show:
+
+temperature trajectories;
+humidity trajectories;
+moisture;
+wetness;
+evaporation;
+weight gain.
+Page 4: Calibration
+Allow selection of calibration batches and parameters.
+
+Show:
+
+initial and fitted parameters;
+objective-function reduction;
+predicted versus measured plots;
+parameter bounds;
+parameter uncertainty.
+This page should eventually be limited to model developers, not routine users.
+
+Page 5: Validation
+Show:
+
+calibration batches separately from validation batches;
+error metrics;
+parity plots;
+residual plots;
+performance by phase;
+performance by equipment and product.
+Page 6: Spray and uniformity
+Show:
+
+droplet-size estimate;
+drying-versus-flight condition;
+spray flux;
+exposure count;
+coating-mass histogram;
+film-thickness distribution;
+coating CoV.
+Page 7: Uncertainty and risk
+Show:
+
+Monte Carlo results;
+confidence bands;
+failure-probability map;
+green/amber/red design space;
+most influential uncertain inputs.
+Page 8: Optimization and recommendations
+Show:
+
+current recipe;
+safer candidate;
+performance-oriented candidate;
+predicted differences;
+constraint margins;
+recommendation rationale.
+Page 9: Export
+Generate:
+
+batch report;
+validation report;
+parameter file;
+simulation CSV;
+plots;
+model version and audit information.
+Streamlit officially supports multipage organization, including the newer st.Page and st.navigation approach.
+streamlit
+
+11. The exact development sequence I recommend
+Step 0: Freeze the current program
+Keep EE-test-9-1-Varible-Solid-Fraction unchanged as the reference implementation.
+sharepoint
+
+Rename the working copy conceptually as:
+
+
+
+
+Plain Text
+legacy_ee_reference.py
+This gives you a baseline against which the new steady-state module can be regression-tested.
+
+Step 1: Create the project structure
+
+
+
+Plain Text
+tablet_coating_track_a/
+│
+├── streamlit_app.py
+├── requirements.txt
+├── README.md
+├── pyproject.toml
+│
+├── coating_model/
+│   ├── __init__.py
+│   ├── units.py
+│   ├── psychrometrics.py
+│   ├── solvent_properties.py
+│   ├── steady_state.py
+│   ├── dynamic_model.py
+│   ├── geometry.py
+│   ├── spray.py
+│   ├── exposure.py
+│   ├── cqa.py
+│   ├── calibration.py
+│   ├── validation.py
+│   ├── uncertainty.py
+│   ├── optimization.py
+│   └── recommendations.py
+│
+├── app_pages/
+│   ├── home.py
+│   ├── data_upload.py
+│   ├── simulation.py
+│   ├── calibration_page.py
+│   ├── validation_page.py
+│   ├── uncertainty_page.py
+│   └── optimization_page.py
+│
+├── configs/
+│   ├── equipment.yaml
+│   ├── products.yaml
+│   └── limits.yaml
+│
+├── tests/
+│   ├── test_psychrometrics.py
+│   ├── test_mass_balance.py
+│   ├── test_energy_balance.py
+│   ├── test_dynamic_model.py
+│   └── test_regression_legacy.py
+│
+└── sample_data/
+
+Show more lines
+The official Streamlit documentation identifies st.Page and st.navigation as the preferred flexible approach for multipage applications.
+streamlit
+
+Step 2: Extract the current equations from Streamlit
+Move these out of the interface:
+
+saturation-pressure calculation;
+vapour-pressure functions;
+humidity-ratio functions;
+enthalpy functions;
+air-density calculation;
+dry-air mass-flow calculation;
+evaporation-rate calculation;
+exhaust-humidity calculation;
+exhaust-temperature calculation;
+EE calculation;
+IPA wet-bulb calculation.
+Your app should call these functions but should not contain them.
+
+Step 3: Correct and verify the baseline EE model
+Before adding dynamics:
+
+standardize SI units;
+verify water and IPA property handling;
+correct the heat-loss formulation;
+use 
+U
+A
+UA rather than holding normalized 
+α
+α fixed across airflow;
+verify all thermodynamic signs;
+compare outputs with the legacy application;
+document justified differences.
+Only after the baseline passes should dynamics be added.
+
+Step 4: Define a standard time-series input format
+For example:
+
+
+
+
+Plain Text
+timestamp
+phase
+inlet_temperature_C
+inlet_RH_fraction
+airflow_CFM
+spray_rate_g_min_gun
+pan_RPM
+atomization_pressure_bar
+pattern_pressure_bar
+measured_exhaust_temperature_C
+measured_exhaust_RH_fraction
+``
+Create one cleaning function that:
+
+parses timestamps;
+sorts records;
+converts units;
+checks missing rows;
+checks impossible values;
+interpolates only where scientifically allowed;
+identifies spray-on and spray-off periods.
+Step 5: Build the one-zone dynamic model
+Start with states:
+
+y
+(
+t
+)
+=
+[
+T
+b
+,
+M
+w
+,
+b
+]
+y(t)=[T 
+b
+​
+ ,M 
+w,b
+​
+ ]
+Then add gas states only if required:
+
+y
+(
+t
+)
+=
+[
+T
+b
+,
+M
+w
+,
+b
+,
+T
+g
+,
+ω
+g
+]
+y(t)=[T 
+b
+​
+ ,M 
+w,b
+​
+ ,T 
+g
+​
+ ,ω 
+g
+​
+ ]
+Implement the right-hand side:
+
+
+
+
+Python
+def rhs(t, state, process_inputs, product, equipment, parameters):
+    T_bed, M_water = state
+ 
+    # Obtain time-varying CPPs
+    cpp = process_inputs.at_time(t)
+ 
+    # Psychrometric calculations
+    # Heat-transfer calculations
+    # Evaporation calculation
+    # Moisture balance
+    # Energy balance
+ 
+    return [dT_bed_dt, dM_water_dt]
+``
+Then solve with solve_ivp.
+
+Do not begin with two zones, CFD, DEM, AI or ten CQAs. First prove that the one-zone dynamic model predicts temperature and moisture reasonably.
+
+Step 6: Add coating mass and weight gain
+Add a cumulative coating-solids state:
+
+d
+M
+coat
+d
+t
+=
+η
+dep
+m
+˙
+spray
+x
+s
+dt
+dM 
+coat
+​
+ 
+​
+ =η 
+dep
+​
+  
+m
+˙
+  
+spray
+​
+ x 
+s
+​
+ 
+Your state becomes:
+
+y
+(
+t
+)
+=
+[
+T
+b
+,
+M
+w
+,
+b
+,
+M
+coat
+]
+y(t)=[T 
+b
+​
+ ,M 
+w,b
+​
+ ,M 
+coat
+​
+ ]
+This allows prediction of:
+
+cumulative applied solids;
+deposited solids;
+weight gain;
+deposition efficiency.
+Step 7: Add calibration
+Begin with a small number of identifiable parameters:
+
+U
+A
+UA;
+effective 
+c
+p
+,
+b
+c 
+p,b
+​
+ ;
+evaporation efficiency;
+deposition efficiency.
+Set physical bounds. Fit thermodynamic parameters first, deposition parameters second.
+
+Save the resulting parameter set separately from the code.
+
+Step 8: Add validation
+Lock the parameter set.
+
+Run validation batches without refitting.
+
+Build automatic metrics and residual plots.
+
+Only proceed when the model performs acceptably for the intended use.
+
+Step 9: Add spray and tablet-exposure modules
+After the thermodynamic model is stable:
+
+atomization pressure → 
+d
+32
+d 
+32
+​
+ ;
+gun distance → flight time;
+droplet drying → impact regime;
+RPM and geometry → circulation/exposure;
+exposure distribution → coating CoV;
+coating mass → film-thickness distribution.
+Step 10: Add uncertainty
+Assign distributions to measured uncertainties.
+
+Run Monte Carlo simulations.
+
+Calculate:
+
+confidence intervals;
+risk probabilities;
+sensitivity rankings;
+design-space maps.
+Step 11: Add optimization
+Expose only selected controllable CPPs.
+
+Add hard equipment and product constraints.
+
+Test optimizer recommendations against:
+
+baseline recipe;
+physical limits;
+validation domain;
+uncertainty results.
+Step 12: Add recommendations
+Recommendations should read already-calculated results. They should not independently recreate the model.
+
+
+
+
+Python
+recommendations = generate_recommendations(
+    simulation=results,
+    risk=risk_results,
+    optimum=optimization_results,
+    validity=model_validity,
+)
+ 
+Step 13: Build the Streamlit pages
+Only now connect the stable modules to the web interface.
+
+This order prevents an attractive dashboard from hiding an unverified scientific model.
+
+12. What I see in your present code
+The available view of EE-test-9-1-Varible-Solid-Fraction contains 233 displayed source lines. It includes:
+sharepoint
+
+imports for NumPy, SciPy, PsychroLib, Streamlit and Pandas;
+water and IPA constants;
+Antoine saturation-pressure calculations;
+vapour-pressure and humidity-ratio functions;
+density and airflow conversion;
+spray-water calculation;
+exhaust humidity;
+first-law exhaust-temperature calculation;
+EE-factor calculation;
+a dedicated IPA wet-bulb solver;
+a PanCoatingModel class shell;
+Streamlit forms and session state;
+multiple stage inputs;
+initial optimization logic using the highest calculated EE stage.
+However, the retrieved view ends in the optimization section, and some formatting is visibly lost in the rendered source, so I cannot claim that 233 is the exact executable physical line count of the original local file. I can say confidently that the available source representation contains 233 lines and is a small prototype rather than a complete Track A implementation.
+sharepoint
+
+I also found two enterprise copies with the same filename, one authored by you and another associated with Pranathi Venkata Pavani Konathala.
+sharepoint
++1
+
+Important observation
+Your PanCoatingModel class currently only stores parameters. It is not yet organizing the scientific calculation.
+
+Also, your current model mixes global solvent-property overrides, model equations and Streamlit widgets in one file. That should be refactored before expanding it.
+
+13. Roughly how large will Track A become?
+The following are engineering estimates, not values found in your files.
+
+Minimum scientific prototype
+A one-zone dynamic thermodynamic model with:
+
+cleaned psychrometrics;
+legacy EE baseline;
+dynamic temperature and moisture;
+weight gain;
+basic Streamlit results;
+essential tests;
+would likely be around:
+
+1,200 to 2,000 lines of useful Python
+
+Strong validation-ready Track A
+Including:
+
+structured data import;
+equipment and product configurations;
+baseline and dynamic models;
+spray and exposure modules;
+calibration;
+validation;
+uncertainty;
+constrained optimization;
+recommendations;
+multipage Streamlit interface;
+plots;
+tests and result export;
+would more realistically be around:
+
+3,500 to 6,500 lines of Python
+
+More mature internal tool
+If you later add:
+
+several product families;
+aqueous and organic systems;
+robust error handling;
+user roles;
+database storage;
+audit trail;
+extensive test coverage;
+report generation;
+advanced model governance;
+the codebase could exceed:
+
+7,000 to 12,000 lines
+
+But line count is not the goal. A clear 4,000-line modular package is much better than a 1,500-line single Streamlit file.
+
+A reasonable distribution for the strong Track A version might be:
+
+Component	Approximate size
+Thermodynamics and psychrometrics	400–650 lines
+Dynamic solver and process phases	450–800 lines
+Geometry, spray and exposure	500–900 lines
+CQA calculations	300–650 lines
+Calibration and validation	450–800 lines
+Uncertainty and sensitivity	300–550 lines
+Optimization and recommendations	300–550 lines
+Streamlit pages and plotting	650–1,100 lines
+Automated tests	700–1,300 lines
+Tests may eventually be as large as, or larger than, individual scientific modules. That is healthy for a model intended for validation.
+
+14. Your immediate first build target
+Do not attempt the complete 6,000-line application in one step.
+
+Your first coherent version should do only this:
+
+
+
+
+Plain Text
+Upload one plant batch
+        ↓
+Clean and align the time-series
+        ↓
+Run the existing steady-state EE replay
+        ↓
+Run the new dynamic temperature–moisture model
+        ↓
+Compare measured and predicted exhaust temperature/RH
+        ↓
+Predict bed temperature, retained moisture and wetness
+        ↓
+Display residuals and conservation checks
+        ↓
+Export the results
+``
+
+Show more lines
+That first version proves whether the dynamic heart works. After that, add weight gain, then calibration and validation, then spray and uniformity, and only afterward uncertainty and optimization.
+
+So the clearest takeaway is:
+
+Your current program is approximately a 233-line stage-wise steady-state prototype. The next model should not be one giant replacement file. It should grow into a modular Python package, with Streamlit acting only as the interactive shell around a separately testable time-dependent scientific engine.
+
+
+
+
+
+
+
+Sources
+pyFavicon typeFavicon type
+You said:
+no my current ee code is about 680 lines and i just want u to give me a predicted value of how much the track A code will be? also  what do u mean by More mature internal tool
+
+If you later add:
+
+several product families;
+aqueous and organic systems;
+robust error handling;
+user roles;
+database storage;
+audit trail;
+extensive test coverage;
+report generation;
+advanced model governance;. does my current model could have more improvements? or is all of this a part of the later ai recommendation analysis that can be added later? or there are not necessary additions? also what all should i have in my computer- what py libraries , py , streamlit etc tell me
+Copilot said:
+Copilot
+
+Reasoning completed in 4 steps
+You are right, I used the truncated preview instead of your actual figure. Taking your approximately 680-line current EE application as the baseline, my best realistic prediction is that a complete, well-structured Track A application will contain about 4,500 to 6,000 lines of Python, including automated tests. The actual scientific application code itself will probably be around 3,200 to 4,300 lines, with another 1,200 to 1,700 lines of tests and validation utilities.
+
+1. My predicted Track A code size
+Recommended target
+Approximately 5,000 lines total
+
+A reasonable breakdown is:
+
+Track A section	Predicted lines
+Refactored and corrected EE baseline	500–700
+Psychrometrics and solvent properties	250–400
+Dynamic heat and moisture model	450–650
+Process-phase and time-series handling	250–400
+Equipment geometry and scale-up	250–400
+Spray, droplet and deposition model	300–500
+Tablet exposure and uniformity model	300–500
+Weight gain, thickness and CQA modules	300–500
+Calibration and parameter estimation	300–450
+Validation metrics and diagnostics	300–450
+Monte Carlo uncertainty and sensitivity	250–400
+Optimization and recommendation rules	300–450
+Streamlit interface and graphs	600–900
+Automated tests	1,000–1,500
+Expected total	5,050–7,200
+This is an engineering estimate based on the functionality proposed in your Track A report, not a fixed requirement. Your internal search shows the latest copy of EE-test-9-1-Varible-Solid-Fraction, but it does not provide an exact source-line count, so I am using your stated 680-line count as the correct baseline.
+sharepoint
+
+The number I would use in your implementation plan
+If somebody asks how large the proposed application will be, say:
+
+“The current application contains approximately 680 lines. The proposed Track A implementation is expected to grow into a modular codebase of approximately 4,500–6,000 lines, depending on the number of CQA modules, validation tests and reporting features included.”
+
+I would not say 10,000 lines for your current plan. That would correspond to a substantially more mature organizational software product, not the first Track A implementation.
+
+2. What I meant by a “more mature internal tool”
+I did not mean that your mathematical model is incomplete unless all those items are included.
+
+There are two different things:
+
+A. Scientific model maturity
+This concerns whether the model properly represents and validates the tablet-coating process.
+
+It includes:
+
+steady-state EE baseline;
+dynamic heat balance;
+dynamic moisture balance;
+bed-temperature prediction;
+wetness and evaporation calculations;
+coating weight gain;
+equipment geometry;
+scale-up;
+spray and droplet behavior;
+tablet exposure and uniformity;
+calibration;
+independent validation;
+uncertainty;
+optimization;
+recommendation rules.
+These are part of Track A’s scientific capability.
+
+B. Software and organizational maturity
+This concerns whether many people across the company can use the app reliably, securely and traceably.
+
+It includes:
+
+user accounts and permissions;
+centrally stored data;
+formal audit history;
+model-version approval;
+automated report generation;
+broader error handling;
+multiple supported product families;
+formal deployment and maintenance processes.
+These features do not necessarily improve the physical equations. They make the model easier and safer to use as an organizational application.
+
+So “more mature internal tool” means:
+
+The Track A science has already been implemented, but the prototype has been converted into a managed application that multiple authorized users can use repeatedly.
+
+It is not the same as AI, and most of these features have nothing to do with later AI recommendations.
+
+3. Which additions are actually necessary?
+Essential for your first proper Track A model
+These should be included before calling the application Track A:
+
+Scientific essentials
+corrected and modularized current EE model;
+time-dependent tablet-bed heat balance;
+time-dependent moisture balance;
+evaporation-capacity calculation;
+wetness index and cumulative wetness;
+process-phase handling;
+deposited-solids and weight-gain calculation;
+equipment geometry library;
+pan-speed scale-up alternatives;
+spray flux and basic droplet-flight assessment;
+reduced-order tablet-exposure/uniformity model;
+at least one validated CQA pathway;
+parameter calibration;
+independent validation;
+prediction uncertainty;
+operating constraints;
+advisory recommendation rules.
+Software essentials
+CSV or Excel plant-data upload;
+unit checking and conversion;
+missing-data checks;
+clear error messages;
+parameter files;
+Streamlit plots;
+result export;
+automated equation tests;
+model-version label;
+warning when conditions are outside the validated range.
+These are not AI features. They are part of a trustworthy mechanistic modelling application.
+
+4. Which additions can wait?
+Several product families
+This is not required for the first Track A version.
+
+Initially, validate:
+
+one product;
+one coating formulation;
+one or a small number of coaters;
+one solvent system;
+one carefully defined operating range.
+After this works, you can create:
+
+
+
+
+Plain Text
+Shared physical model
+├── Product A parameters
+├── Product B parameters
+└── Product C parameters
+The equations may remain shared, while parameters such as:
+
+heat capacity;
+sorption relationship;
+deposition efficiency;
+dissolution coefficients;
+defect thresholds;
+can be product-specific.
+
+When to add: after the first product is independently validated.
+
+Aqueous and organic solvent systems
+Your present code already contains water and IPA-related calculations, so you may preserve both solvent pathways when refactoring. However, you do not need to fully validate both simultaneously.
+
+A sensible approach is:
+
+preserve the solvent-property abstraction;
+implement the dynamic model;
+validate the solvent system for which you have plant data;
+validate the second solvent system separately later.
+Do not state that the dynamic model is validated for IPA simply because IPA properties are present in the code.
+
+When to add fully: when plant data and a valid business use case exist.
+
+Robust error handling
+Some error handling is essential immediately.
+
+Essential now
+The application must reject or flag:
+
+negative spray rate;
+RH outside 0–100%;
+zero or negative pressure;
+wet-bulb temperature above dry-bulb temperature;
+impossible moisture values;
+missing time column;
+duplicate timestamps;
+RPM outside equipment limits;
+airflow outside equipment limits;
+optimizer failure;
+ODE solver failure;
+unsupported solvent;
+incomplete equipment information.
+Later refinement
+Later you can add:
+
+customized error pages;
+automatic recovery;
+technical logging;
+centralized error monitoring;
+administrator notifications.
+So robust scientific guardrails are necessary now. Enterprise-style failure monitoring can wait.
+
+User roles
+Not necessary while you are developing and validating the model yourself.
+
+Later, roles could distinguish:
+
+ordinary simulation user;
+process engineer;
+model calibrator;
+model approver;
+administrator.
+For example, a routine user should not accidentally recalibrate 
+U
+A
+UA or overwrite validated parameters.
+
+When to add: before broader multi-user deployment.
+
+This is software governance, not AI.
+
+Database storage
+Not initially necessary.
+
+For your prototype, you can use:
+
+CSV files for batch time-series;
+YAML files for equipment and product parameters;
+JSON for run metadata;
+exported Excel or CSV results.
+A database becomes useful when you need to manage:
+
+many batches;
+multiple products;
+different equipment;
+model versions;
+reusable calibration results;
+user activity;
+approved parameter sets.
+When to add: after the model works and the number of datasets becomes difficult to manage with files.
+
+This is data infrastructure, not AI.
+
+Audit trail
+A basic audit trail is useful from the beginning, even without a database.
+
+Every exported simulation should contain:
+
+date and time of run;
+model version;
+input-file name;
+equipment ID;
+product ID;
+parameter-set version;
+user-entered changes;
+optimization settings;
+warnings;
+whether the run was inside the validated domain.
+Later, an enterprise audit trail can store immutable records centrally.
+
+When to add: basic audit metadata now; formal audit-system capability later.
+
+Again, this is not AI.
+
+Extensive test coverage
+Testing is necessary, not optional.
+
+You do not need hundreds of tests on day one, but the following should exist before plant-data validation:
+
+saturation-pressure tests;
+humidity-ratio tests;
+wet-bulb constraint tests;
+mass-conservation tests;
+energy-conservation tests;
+zero-spray test;
+constant-condition steady-state recovery test;
+moisture non-negativity test;
+equipment-limit tests;
+regression comparison with the current EE model;
+known input/output benchmark tests.
+As more modules are added, tests should grow with them.
+
+When to add: continuously during development.
+
+This is scientific reliability, not AI.
+
+Report generation
+You do not need an elaborate PDF-report generator in the first build.
+
+Initially provide:
+
+downloadable result CSV;
+validation metrics;
+interactive Streamlit plots;
+parameter summary;
+downloadable graph images or HTML output.
+Later, create formal:
+
+batch-validation reports;
+calibration reports;
+model-version reports;
+optimization-comparison reports.
+When to add: after the output structure stabilizes.
+
+This is presentation and documentation, not AI.
+
+Advanced model governance
+“Model governance” means formally controlling:
+
+which model version is approved;
+who can change parameters;
+which products and equipment are validated;
+what input ranges are allowed;
+when recalibration is required;
+how changes are reviewed;
+what known limitations exist.
+For your initial model, you need only a lightweight version:
+
+
+
+
+YAML
+model_version: 0.1.0
+status: development
+validated_equipment:
+  - coater_01
+validated_products:
+  - product_A
+validated_ranges:
+  inlet_temperature_C: [minimum, maximum]
+  airflow_CFM: [minimum, maximum]
+  spray_rate_g_min: [minimum, maximum]
+known_limitations:
+  - not validated for another solvent
+  - not validated for another coater
+Formal governance should come before the application becomes a standardized company tool, but it is not needed to begin coding.
+
+This is not AI either.
+
+5. What can be reserved for the later AI Copilot?
+The later AI layer can help with:
+
+explaining why a prediction changed;
+summarizing calibration and validation results;
+translating technical graphs for non-technical users;
+comparing two process scenarios;
+writing a batch-analysis narrative;
+explaining which CPPs drive risk;
+guiding users to the correct application page;
+generating draft technical reports from structured results;
+answering questions about already-calculated outputs.
+AI should not replace:
+
+dynamic differential equations;
+mass and energy balances;
+calibration;
+validation;
+Monte Carlo simulation;
+optimization;
+equipment constraints;
+validity-range checks;
+audit records.
+The distinction is:
+
+
+
+
+Plain Text
+Python model:
+calculates the result
+ 
+Optimization code:
+searches for the best feasible scenario
+ 
+Recommendation rules:
+decide which warning or advisory message applies
+ 
+Graphs:
+show the evidence
+ 
+AI Copilot:
+explains all of the above in natural language
+Therefore, do not postpone uncertainty, optimization, validation or recommendation rules because AI will be added later. Those are numerical model functions.
+
+6. Can your Track A model still be improved beyond the current report?
+Yes. Your Track A architecture is strong, but I would add four practical features that are not “AI.”
+
+1. Model validity envelope
+Before giving recommendations, the model should check whether the inputs lie within the calibrated domain.
+
+Example:
+
+
+
+
+Plain Text
+Validated spray-
+2. Data-quality engine
+Before running the model, check:
+
+missing timestamps;
+unit inconsistencies;
+stuck sensors;
+sudden impossible jumps;
+missing spray periods;
+inconsistent phase labels.
+Bad input data can make a correct equation appear wrong.
+
+3. Parameter-identifiability check
+The model should not fit multiple parameters that compensate for each other unless the data can distinguish them.
+
+For example, if both 
+h
+conv
+h 
+conv
+​
+  and 
+A
+bed
+A 
+bed
+​
+  are freely fitted, only their product may be identifiable. One may need to be calculated geometrically or fixed from literature.
+
+4. Abstention or refusal logic
+The system should be able to say:
+
+“No recommendation issued because uncertainty is too high.”
+
+This is more scientifically responsible than always returning a setpoint.
+
+These improvements belong in the Python model, not the future AI layer.
+
+7. What should you have installed on your computer?
+I recommend a simple local installation using a dedicated Python virtual environment.
+
+A. Python
+Use a supported 64-bit Python 3 version. For this scientific package, my practical recommendation is Python 3.12 or 3.13, rather than immediately adopting the newest release, because scientific-package compatibility should be checked before changing versions.
+
+The official Python downloads page currently lists Python 3.14 as a bugfix release, Python 3.13 as a bugfix release, and Python 3.12 under security maintenance.
+python
+
+Download Python from the official Python download page.
+python
+
+After installation, verify:
+
+
+
+
+Shell
+python --version
+ 
+On some Windows setups:
+
+
+
+
+Shell
+py --version
+B. Code editor
+Install one of:
+
+Visual Studio Code;
+PyCharm;
+another Python-capable editor approved for your environment.
+For your project, Visual Studio Code is sufficient.
+
+Useful editor extensions:
+
+Python;
+Pylance;
+Jupyter, if you want notebooks;
+YAML support.
+C. Git
+Install Git for version control.
+
+Use it to preserve:
+
+the current 680-line reference program;
+each Track A development stage;
+equation changes;
+parameter-file changes;
+validation fixes.
+Your repository should never overwrite the legacy version.
+
+D. Create a project folder
+Example:
+
+
+
+
+Shell
+mkdir tablet_coating_track_
+E. Create a virtual environment
+A virtual environment prevents this application’s packages from interfering with other Python projects. Official Streamlit guidance supports local installation using tools such as venv and pip.
+streamlit
+
+On Windows:
+
+
+
+
+Shell
+python -m venv .
+If using PowerShell and activation is allowed:
+
+
+
+
+PowerShell
+python -m 
+On macOS or Linux:
+
+
+
+
+Shell
+python3 -m venv .venv
+source .venv
+Upgrade installation tools:
+
+
+
+
+Shell
+python -m pip install
+8. Python libraries to install
+Core libraries needed from the beginning
+
+
+
+Shell
+python 
+What each library does
+numpy: numerical arrays, vectorized calculations and Monte Carlo samples.
+pandas: batch time-series, CSV and tabular data.
+scipy: ODE solver, calibration and optimization.
+streamlit: web interface.
+psychrolib: psychrometric calculations and comparison checks.
+plotly: interactive scientific plots and design-space maps.
+openpyxl: reading and writing Excel .xlsx files.
+pyyaml: equipment, product and model-parameter configuration files.
+NumPy’s official installation documentation states that Python is its prerequisite and describes environment-based installation using pip or conda; SciPy provides corresponding project and environment-based installation guidance.
+numpy
++1
+
+Streamlit’s official installation instructions use:
+
+
+
+
+Shell
+pip install streamlit
+streamlit
+to install and test the framework.
+streamlit
+
+Plotly is appropriate for interactive line charts, histograms, heatmaps, subplots, error bars and scientific visualizations.
+plotly
+
+Development and testing libraries
+
+
+
+Shell
+python
+pytest: automated equation and integration tests.
+pytest-cov: measures how much code is exercised by tests.
+ruff: catches coding errors and enforces consistency.
+black: automatically formats Python.
+mypy: optional static type checking.
+I recommend using pytest, pytest-cov, ruff and black from the beginning. mypy can be added once the package structure is stable.
+
+Calibration and uncertainty libraries
+Start with SciPy and NumPy. Add these only when needed:
+
+
+
+
+Shell
+python -m pip install SALib
+SALib: Morris and Sobol sensitivity analysis.
+lmfit: more convenient bounded parameter fitting and parameter reporting.
+SciPy is enough for the initial calibration and optimization engine. Do not add libraries merely because they sound advanced.
+
+Optional optimization library
+For simple constrained problems, use SciPy first.
+
+Later, if you need multi-objective optimization:
+
+
+
+
+Shell
+python -m 
+This would support trade-offs such as:
+
+failure risk;
+coating time;
+uniformity;
+energy use.
+Not needed for the first dynamic model.
+
+Optional statistical modelling
+For product-specific CQA relationships:
+
+
+
+
+Shell
+python -m pip install scikit-learn
+Use these only after the mechanistic states are validated.
+
+statsmodels: interpretable regression and statistical diagnostics.
+scikit-learn: preprocessing, regression, cross-validation and residual models.
+This is not yet AI. It is conventional statistical or machine-learning support for product-specific CQA models.
+
+Optional reporting
+Later:
+
+
+
+
+Shell
+python -m pip 
+kaleido: export Plotly charts as static images.
+jinja2: structured HTML report templates.
+Plotly’s package documentation identifies Kaleido as the recommended option for static-image export.
+pypi
+
+9. Recommended first requirements.txt
+Do not pin exact versions until the environment is tested successfully. Begin with:
+
+
+
+
+Plain Text
+numpy
+pandas
+After installation and successful testing:
+
+
+
+
+Shell
+python -m pip freeze > requirements
+Keep:
+
+requirements.txt as the readable dependency list;
+requirements-lock.txt as the exact working environment snapshot.
+Pandas officially supports installation from PyPI using pip and recommends using a virtual environment.
+pydata
+
+10. Verify the installation
+Run:
+
+
+
+
+Shell
+python 
+Then test Streamlit:
+
+
+
+
+Shell
+streamlit hello
