@@ -113,25 +113,30 @@ with tab1:
                 'no_of_guns': num_guns, 'pan_rpm': pan_rpm,
                 'HLF_kW_K': default_UA, 'cp_core_kJ_kgK': 1.1, 'A_bed_m2': 2.0,
                 'h_conv_W_m2K': 50.0, 'eta_dep': 0.95, 'evap_efficiency': 0.8,
-                'solvent': solvent_name, 'initial_T_bed': 30.0,
+                'solvent_name': solvent_name, 'initial_T_bed': 30.0,
                 'T_inlet': ts_df['T_inlet'].mean(), 'air_cfm': ts_df['airflow'].mean(),
                 'spray_rate_g_min_gun': ts_df['spray_rate'].max(), 'R_h_inlet': ts_df['inlet_RH'].mean()
             }
             
             res = run_batch_from_csv(ts_df, inputs_used)
             res['phase'] = ts_df['phase'].values
+            st.session_state['latest_res'] = res
+            st.session_state['latest_inputs'] = inputs_used
+            st.session_state['simulation_run'] = True
             plot_and_summarize(res, inputs_used)
     st.markdown("</div>", unsafe_allow_html=True)
 
 with tab2:
-    from app_pages.validation_page import calculate_stage_physics
+    from coating_model.energy_balance import calculate_exhaust_state
     st.markdown("<div class='glass-card'>", unsafe_allow_html=True)
     st.subheader("Environmental Equivalence (EE) Optimization")
     st.write("Find the optimal Inlet Temp and Airflow to hit a target EE at a higher spray rate.")
     
     col1, col2 = st.columns(2)
     with col1:
-        target_EE = st.number_input("Target EE (e.g. from a successful baseline run)", value=1.5)
+        target_T_exh = st.number_input("Target exhaust temperature (°C)", value=48.5,
+                                       help="Optimise inlet temp and airflow to hit "
+                                            "this exhaust condition at the new spray rate.")
         new_spray_rate = st.number_input("Desired Spray Rate (g/min/gun)", value=75.0)
         solids_frac_opt = st.number_input("Solids Fraction", value=0.15)
         batch_mass_opt = st.number_input("Batch Mass (kg)", value=100.0)
@@ -154,8 +159,15 @@ with tab2:
                     'T_inlet': T_in, 'air_cfm': cfm, 'R_h': rh_fixed
                 }
                 try:
-                    res = calculate_stage_physics(inputs, solvent, default_UA)
-                    return abs(res['EE_factor'] - target_EE)
+                    st_ = calculate_exhaust_state(
+                        T_inlet_C=inputs['T_inlet'], air_cfm=inputs['air_cfm'],
+                        RH_inlet=inputs['R_h'],
+                        spray_rate_g_min_gun=inputs['spray_rate_g_min_gun'],
+                        no_of_guns=inputs['no_of_guns'],
+                        solids_fraction=inputs['solids_fraction'],
+                        P_total_kPa=inputs['P_total'], solvent_name=solvent_name,
+                        UA_kW_K=default_UA, check_physics=False)
+                    return abs(st_.T_exhaust_C - target_T_exh)
                 except Exception:
                     return 1e6
             
@@ -170,13 +182,20 @@ with tab2:
                 'm_s': batch_mass_opt, 'spray_rate_g_min_gun': new_spray_rate,
                 'T_inlet': best_T_in, 'air_cfm': best_cfm, 'R_h': rh_fixed
             }
-            res_opt = calculate_stage_physics(inputs_opt, solvent, default_UA)
+            res_opt = calculate_exhaust_state(
+                T_inlet_C=inputs_opt['T_inlet'], air_cfm=inputs_opt['air_cfm'],
+                RH_inlet=inputs_opt['R_h'],
+                spray_rate_g_min_gun=inputs_opt['spray_rate_g_min_gun'],
+                no_of_guns=inputs_opt['no_of_guns'],
+                solids_fraction=inputs_opt['solids_fraction'],
+                P_total_kPa=inputs_opt['P_total'], solvent_name=solvent_name,
+                UA_kW_K=default_UA, check_physics=False)
             
             st.success("Optimization Complete!")
             
             c1, c2, c3, c4 = st.columns(4)
             c1.metric("Optimal T_inlet", f"{best_T_in:.1f} °C")
             c2.metric("Optimal Airflow", f"{best_cfm:.0f} CFM")
-            c3.metric("Resulting EE", f"{res_opt['EE_factor']:.4f}")
-            c4.metric("Pred. T_exhaust", f"{res_opt['T_exhaust']:.1f} °C")
+            c3.metric("Pred. T_exhaust", f"{res_opt.T_exhaust_C:.2f} °C")
+            c4.metric("Exhaust RH", f"{res_opt.RH_exhaust:.3f}")
     st.markdown("</div>", unsafe_allow_html=True)

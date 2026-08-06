@@ -1,0 +1,30 @@
+column,provenance,usable_as_validation_target,note
+batch_index,PROCESS_RECORD,no,identifier
+batch_id,PROCESS_RECORD,no,identifier
+pump_rpm,PROCESS_RECORD,no,model input (setpoint)
+spray_rate_g_min_gun,DERIVED_FROM_MEASURED,no,model input; our model recomputes this from gun_calibration and must match it (target A2)
+spray_rate_total_g_min_reported,DERIVED_FROM_MEASURED,no,model input
+T_inlet_C,MEASURED,no,model input
+air_cfm,MEASURED,no,model input
+RH_inlet_fraction,MEASURED_UNVERIFIED,no,model input; constant 0.05 on every row - may be a typed default (Q5)
+atomisation_bar,PROCESS_RECORD,no,recorded but constant; carries zero information
+pan_rpm,PROCESS_RECORD,no,recorded; confounded with pump stage
+T_exhaust_meas_C,MEASURED,YES,THE thermodynamic ground truth - acceptance target A1
+alpha_ee_output,EE_OUTPUT,NEVER,legacy EE per-row fitted parameter - not data
+alpha_avg_ee_output,EE_OUTPUT,NEVER,legacy EE batch mean of the above - not data
+ee_factor_ee_output,EE_OUTPUT,NEVER,legacy EE derived quantity - not data
+RH_exhaust_ee_output,EE_OUTPUT,NEVER,verified EE-computed to 0.0005 across all 12 rows (PLAN 0.3). Looks like a measurement; is not. No measured exhaust RH exists - see Q8
+stage_time_min,PROCESS_RECORD,no,model input
+solution_sprayed_kg,PROCESS_RECORD,no,reconciles as rate x time
+no_of_guns,PROCESS_RECORD,no,model input
+solids_fraction,PROCESS_RECORD,no,model input
+P_total_kPa,PROCESS_RECORD,no,model input
+solution_mass_nominal_kg,PROCESS_RECORD,no,"NOMINAL recipe value, not an actual - differs from total sprayed by -6.7% to +5.8% (limitation L1)"
+total_sprayed_kg,PROCESS_RECORD,no,batch total
+cycle_time_h,PROCESS_RECORD,YES,acceptance target A4 - already reconciles exactly
+weight_gain_pct,LAB_RESULT,YES,acceptance target A3 - blocked until core mass known (Q1)
+assay_pct,LAB_RESULT,YES,independent lab measurement
+acceptance_role,META,no,calibration | development | SEALED
+source,META,no,provenance
+entered_by,META,no,provenance
+confirmed_against_excel,META,no,Gate 0 stays open until TRUE

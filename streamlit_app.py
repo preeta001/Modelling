@@ -126,7 +126,6 @@ pages = {
         st.Page("app_pages/simulation_page.py", title="Simulation & Optimization", icon="📈"),
         st.Page("app_pages/spray_uniformity_page.py", title="Spray & Uniformity", icon="💧"),
         st.Page("app_pages/cqa_page.py", title="CQA Predictions", icon="🎯"),
-        st.Page("app_pages/scale_up_page.py", title="Scale-Up Engine", icon="🔄"),
         st.Page("app_pages/execution_summary.py", title="Execution Summary", icon="📋")
     ],
     "🎲 STEP 4: RISK & DESIGN SPACE": [
