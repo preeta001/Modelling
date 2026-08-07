@@ -36,7 +36,7 @@ with col2:
     st.metric("Spray Flux (J_spray)", f"{flux*1000:.3f} g/(m²·s)")
 
 with st.expander("📖 What do these metrics mean? (PDF Ch. 7)"):
-    st.write("""
+    st.write(r"""
     **Physical Interpretation:**
     - **d32**: The average droplet size. High atomisation pressure decreases droplet size; high spray rate increases it.
     - **Spray Regime**: Evaluates the Drying-vs-Flight dimensionless number ($\Pi_{flight}$). If droplets dry before hitting the bed ($\Pi < 1$), it causes spray drying and poor adhesion. If they arrive too wet ($\Pi \gg 1$), it causes overwetting.
@@ -80,7 +80,7 @@ if st.button("Run Monte Carlo Uniformity Simulation", type="primary"):
         st.plotly_chart(fig2, use_container_width=True)
         
         with st.expander("📖 What does this graph show? (PDF Eq 8.9)"):
-            st.write("""
+            st.write(r"""
             **Physical Interpretation:**
             The $CV$ of coating mass decays proportional to $1/\sqrt{t_{coat}}$. Doubling the coating time only reduces the CV by ~29%. To achieve better uniformity faster, you must increase the spray zone width (more guns) or decrease the circulation time (higher RPM).
             """)

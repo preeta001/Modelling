@@ -122,9 +122,11 @@ b1, b2, b3 = st.columns(3)
 no_of_guns = b1.number_input("Number of guns", value=6, min_value=1)
 solids_fraction = b2.number_input("Solids fraction", value=0.15, min_value=0.01,
                                   max_value=0.99)
+# Seed the key BEFORE the widget exists. Passing both key= and value= makes
+# Streamlit warn that the default is being overridden by session state.
+st.session_state.setdefault("n_stages_val", 3)
 n_stages = b3.number_input("Number of stages", min_value=1, max_value=12,
-                           key="n_stages_val",
-                           value=st.session_state.get("n_stages_val", 3))
+                           key="n_stages_val")
 
 for _i in range(int(n_stages)):
     if f"sr{_i}" not in st.session_state:
